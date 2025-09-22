@@ -1,0 +1,32 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Guest {
+  id          Int       @id @default(autoincrement())
+  fullName    String
+  attending   Boolean? // null = no confirmado, true = sí, false = no
+  confirmedAt DateTime? // cuándo confirmó
+  note        Note?     @relation(fields: [noteId], references: [id])
+  noteId      Int?      @unique
+  Group       Group?    @relation(fields: [groupId], references: [id])
+  groupId     Int?
+}
+
+model Note {
+  id        Int      @id @default(autoincrement())
+  message   String   @db.VarChar(280)
+  createdAt DateTime @default(now())
+  guest     Guest?
+}
+
+model Group {
+  id     Int     @id @default(autoincrement())
+  name   String // Ej: "Familia Portillo"
+  guests Guest[]
+}
