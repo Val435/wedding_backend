@@ -56,7 +56,8 @@ async getGuests(req: Request, res: Response) {
   },
 
   async getNotes(req: Request, res: Response) {
-    const notes = await GuestService.getNotes();
-    res.json(notes);
-  },
+  const notes = await GuestService.getNotes();
+  res.json(notes);
+}
+
 };

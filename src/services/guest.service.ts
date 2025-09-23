@@ -28,7 +28,18 @@ export const GuestService = {
     });
   },
 
-  async getNotes() {
-    return prisma.note.findMany({ orderBy: { createdAt: "desc" } });
-  },
+ async getNotes() {
+  return prisma.note.findMany({
+    orderBy: { createdAt: "desc" },
+    include: {
+      guest: {
+        select: {
+          id: true,
+          fullName: true,
+        },
+      },
+    },
+  });
+}
+
 };
