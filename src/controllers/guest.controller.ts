@@ -12,10 +12,32 @@ async getGuests(req: Request, res: Response) {
     return res.json(guests);
   }
 
-  // Buscar TODOS los invitados con ese nombre EXACTO (case-insensitive)
-  const matchingGuests = await prisma.guest.findMany({
-    where: { fullName: { equals: q as string, mode: "insensitive" } },
+  const searchTerm = (q as string).trim();
+
+  // Función para normalizar texto (quitar tildes)
+  const normalize = (text: string) => {
+    return text
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase();
+  };
+
+  // Obtener TODOS los invitados
+  const allGuests = await prisma.guest.findMany({
     include: { note: true },
+  });
+
+  // Filtrar en memoria con lógica inteligente
+  const matchingGuests = allGuests.filter((guest) => {
+    const normalizedFullName = normalize(guest.fullName);
+    const normalizedSearch = normalize(searchTerm);
+
+    // Dividir el nombre completo en palabras
+    const nameParts = normalizedFullName.split(/\s+/);
+
+    // Verificar si alguna palabra del nombre coincide EXACTAMENTE con la búsqueda
+    // Esto permite buscar por nombre o apellido individual
+    return nameParts.some(part => part === normalizedSearch);
   });
 
   if (matchingGuests.length === 0) {
