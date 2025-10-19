@@ -32,11 +32,19 @@ async getGuests(req: Request, res: Response) {
     const normalizedFullName = normalize(guest.fullName);
     const normalizedSearch = normalize(searchTerm);
 
-    // Dividir el nombre completo en palabras
+    // Dividir tanto el nombre completo como la búsqueda en palabras
     const nameParts = normalizedFullName.split(/\s+/);
+    const searchParts = normalizedSearch.split(/\s+/);
 
-    // Verificar si alguna palabra del nombre coincide EXACTAMENTE con la búsqueda
-    // Esto permite buscar por nombre o apellido individual
+    // Si la búsqueda tiene múltiples palabras (ej: "Martin Pocasangre")
+    // verificar que TODAS las palabras de la búsqueda estén en el nombre
+    if (searchParts.length > 1) {
+      return searchParts.every(searchPart =>
+        nameParts.some(namePart => namePart === searchPart)
+      );
+    }
+
+    // Si es una sola palabra, verificar coincidencia exacta con cualquier parte del nombre
     return nameParts.some(part => part === normalizedSearch);
   });
 
