@@ -14,6 +14,11 @@ async getGuests(req: Request, res: Response) {
 
   const searchTerm = (q as string).trim();
 
+  if (!searchTerm) {
+    const guests = await GuestService.findAll();
+    return res.json(guests);
+  }
+
   // Función para normalizar texto (quitar tildes)
   const normalize = (text: string) => {
     return text
@@ -21,6 +26,10 @@ async getGuests(req: Request, res: Response) {
       .replace(/[\u0300-\u036f]/g, "")
       .toLowerCase();
   };
+
+  // Tokenizador: separa por caracteres no alfanuméricos
+  const tokenize = (text: string) =>
+    text.replace(/[^a-z0-9]+/g, " ").trim().split(/\s+/).filter(Boolean);
 
   // Obtener TODOS los invitados
   const allGuests = await prisma.guest.findMany({
@@ -33,8 +42,8 @@ async getGuests(req: Request, res: Response) {
     const normalizedSearch = normalize(searchTerm);
 
     // Dividir tanto el nombre completo como la búsqueda en palabras
-    const nameParts = normalizedFullName.split(/\s+/);
-    const searchParts = normalizedSearch.split(/\s+/);
+    const nameParts = tokenize(normalizedFullName);
+    const searchParts = tokenize(normalizedSearch);
 
     // Si la búsqueda tiene múltiples palabras (ej: "Martin Pocasangre")
     // verificar que TODAS las palabras de la búsqueda estén presentes como palabras completas
@@ -46,7 +55,7 @@ async getGuests(req: Request, res: Response) {
 
     // Si es una sola palabra, debe coincidir EXACTAMENTE con alguna palabra del nombre
     // "Martin" solo encuentra "Martin", NO "Martinez"
-    return nameParts.some(part => part === normalizedSearch);
+    return nameParts.some(part => part === searchParts[0]);
   });
 
   if (matchingGuests.length === 0) {
@@ -68,7 +77,17 @@ async getGuests(req: Request, res: Response) {
       where: { groupId: { in: groupIds } },
       include: { note: true },
     });
-    return res.json(allGroupMembers);
+
+    // Incluir también los que coinciden y NO tienen grupo
+    const noGroupMatches = matchingGuests.filter((g: any) => g.groupId == null);
+    if (noGroupMatches.length === 0) {
+      return res.json(allGroupMembers);
+    }
+
+    const mergedById = new Map<number, any>();
+    for (const g of allGroupMembers) mergedById.set(g.id, g);
+    for (const g of noGroupMatches) mergedById.set(g.id, g);
+    return res.json(Array.from(mergedById.values()));
   }
 
   // Si ninguno tiene grupo, devolver solo los que coinciden exactamente

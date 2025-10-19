@@ -15,6 +15,10 @@ exports.GuestController = {
             return res.json(guests);
         }
         const searchTerm = q.trim();
+        if (!searchTerm) {
+            const guests = await guest_service_1.GuestService.findAll();
+            return res.json(guests);
+        }
         // Función para normalizar texto (quitar tildes)
         const normalize = (text) => {
             return text
@@ -22,6 +26,8 @@ exports.GuestController = {
                 .replace(/[\u0300-\u036f]/g, "")
                 .toLowerCase();
         };
+        // Tokenizador: separa por caracteres no alfanuméricos
+        const tokenize = (text) => text.replace(/[^a-z0-9]+/g, " ").trim().split(/\s+/).filter(Boolean);
         // Obtener TODOS los invitados
         const allGuests = await prisma_1.default.guest.findMany({
             include: { note: true },
@@ -31,8 +37,8 @@ exports.GuestController = {
             const normalizedFullName = normalize(guest.fullName);
             const normalizedSearch = normalize(searchTerm);
             // Dividir tanto el nombre completo como la búsqueda en palabras
-            const nameParts = normalizedFullName.split(/\s+/);
-            const searchParts = normalizedSearch.split(/\s+/);
+            const nameParts = tokenize(normalizedFullName);
+            const searchParts = tokenize(normalizedSearch);
             // Si la búsqueda tiene múltiples palabras (ej: "Martin Pocasangre")
             // verificar que TODAS las palabras de la búsqueda estén presentes como palabras completas
             if (searchParts.length > 1) {
@@ -40,7 +46,7 @@ exports.GuestController = {
             }
             // Si es una sola palabra, debe coincidir EXACTAMENTE con alguna palabra del nombre
             // "Martin" solo encuentra "Martin", NO "Martinez"
-            return nameParts.some(part => part === normalizedSearch);
+            return nameParts.some(part => part === searchParts[0]);
         });
         if (matchingGuests.length === 0) {
             return res.json([]);
@@ -57,7 +63,17 @@ exports.GuestController = {
                 where: { groupId: { in: groupIds } },
                 include: { note: true },
             });
-            return res.json(allGroupMembers);
+            // Incluir también los que coinciden y NO tienen grupo
+            const noGroupMatches = matchingGuests.filter((g) => g.groupId == null);
+            if (noGroupMatches.length === 0) {
+                return res.json(allGroupMembers);
+            }
+            const mergedById = new Map();
+            for (const g of allGroupMembers)
+                mergedById.set(g.id, g);
+            for (const g of noGroupMatches)
+                mergedById.set(g.id, g);
+            return res.json(Array.from(mergedById.values()));
         }
         // Si ninguno tiene grupo, devolver solo los que coinciden exactamente
         return res.json(matchingGuests);
