@@ -12,26 +12,30 @@ async getGuests(req: Request, res: Response) {
     return res.json(guests);
   }
 
-  // Buscar invitado por nombre
-  const found = await prisma.guest.findFirst({
-    where: { fullName: { contains: q as string, mode: "insensitive" } },
+  // Buscar TODOS los invitados con ese nombre EXACTO (case-insensitive)
+  const matchingGuests = await prisma.guest.findMany({
+    where: { fullName: { equals: q as string, mode: "insensitive" } },
+    include: { note: true },
   });
 
-  if (!found) {
+  if (matchingGuests.length === 0) {
     return res.json([]);
   }
 
-  // Si pertenece a un grupo, traer a todo el grupo
-  if (found.groupId) {
-    const group = await prisma.guest.findMany({
-      where: { groupId: found.groupId },
+  // Recopilar todos los IDs de grupos únicos
+  const groupIds = [...new Set(matchingGuests.map(g => g.groupId).filter(id => id !== null))];
+
+  // Si hay grupos, traer TODOS los invitados de esos grupos
+  if (groupIds.length > 0) {
+    const allGroupMembers = await prisma.guest.findMany({
+      where: { groupId: { in: groupIds } },
       include: { note: true },
     });
-    return res.json(group);
+    return res.json(allGroupMembers);
   }
 
-  // Si no tiene grupo, devolver solo esa persona
-  return res.json([found]);
+  // Si ninguno tiene grupo, devolver solo los que coinciden exactamente
+  return res.json(matchingGuests);
 },
 
 
