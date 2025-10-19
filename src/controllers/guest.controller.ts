@@ -37,14 +37,15 @@ async getGuests(req: Request, res: Response) {
     const searchParts = normalizedSearch.split(/\s+/);
 
     // Si la búsqueda tiene múltiples palabras (ej: "Martin Pocasangre")
-    // verificar que TODAS las palabras de la búsqueda estén en el nombre
+    // verificar que TODAS las palabras de la búsqueda estén presentes como palabras completas
     if (searchParts.length > 1) {
       return searchParts.every(searchPart =>
         nameParts.some(namePart => namePart === searchPart)
       );
     }
 
-    // Si es una sola palabra, verificar coincidencia exacta con cualquier parte del nombre
+    // Si es una sola palabra, debe coincidir EXACTAMENTE con alguna palabra del nombre
+    // "Martin" solo encuentra "Martin", NO "Martinez"
     return nameParts.some(part => part === normalizedSearch);
   });
 
