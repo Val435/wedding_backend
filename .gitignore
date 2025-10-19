@@ -3,3 +3,10 @@ node_modules
 .env
 
 /generated/prisma
+
+# Ignore build artifacts
+dist/
+
+# Ignore Excel temporary lock files
+~$*
+prisma/~$*

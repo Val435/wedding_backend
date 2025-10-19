@@ -28,7 +28,7 @@ async getGuests(req: Request, res: Response) {
   });
 
   // Filtrar en memoria con lógica inteligente
-  const matchingGuests = allGuests.filter((guest) => {
+  const matchingGuests = allGuests.filter((guest: any) => {
     const normalizedFullName = normalize(guest.fullName);
     const normalizedSearch = normalize(searchTerm);
 
@@ -54,7 +54,13 @@ async getGuests(req: Request, res: Response) {
   }
 
   // Recopilar todos los IDs de grupos únicos
-  const groupIds = [...new Set(matchingGuests.map(g => g.groupId).filter(id => id !== null))];
+  const groupIds = [
+    ...new Set(
+      matchingGuests
+        .map((g: any) => g.groupId)
+        .filter((id: any) => typeof id === "number")
+    ),
+  ] as number[];
 
   // Si hay grupos, traer TODOS los invitados de esos grupos
   if (groupIds.length > 0) {

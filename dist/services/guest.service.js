@@ -30,6 +30,16 @@ exports.GuestService = {
         });
     },
     async getNotes() {
-        return prisma_1.default.note.findMany({ orderBy: { createdAt: "desc" } });
-    },
+        return prisma_1.default.note.findMany({
+            orderBy: { createdAt: "desc" },
+            include: {
+                guest: {
+                    select: {
+                        id: true,
+                        fullName: true,
+                    },
+                },
+            },
+        });
+    }
 };
