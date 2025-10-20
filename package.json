@@ -7,7 +7,7 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "prisma": "prisma",
-    "seed": "ts-node prisma/seed.ts"
+    "seed": "ts-node --transpile-only prisma/seed.ts"
   },
   "keywords": [],
   "author": "",
