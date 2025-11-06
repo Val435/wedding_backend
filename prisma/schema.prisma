@@ -30,3 +30,27 @@ model Group {
   name   String // Ej: "Familia Portillo"
   guests Guest[]
 }
+
+model GalleryPhoto {
+  id           String    @id @default(uuid())
+  fileUrl      String    @db.VarChar(500)
+  thumbnailUrl String?   @db.VarChar(500)
+  fileType     FileType
+  userName     String?   @db.VarChar(100)
+  message      String?   @db.Text
+  fileSize     Int?
+  mimeType     String?   @db.VarChar(50)
+  width        Int?
+  height       Int?
+  duration     Int?      // solo para videos (en segundos)
+  uploadedAt   DateTime  @default(now())
+  isApproved   Boolean   @default(true)
+
+  @@index([fileType])
+  @@index([uploadedAt(sort: Desc)])
+}
+
+enum FileType {
+  image
+  video
+}
