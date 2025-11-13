@@ -85,8 +85,8 @@ exports.GuestController = {
     },
     async confirmGuest(req, res) {
         const { id } = req.params;
-        const { attending } = req.body;
-        const guest = await guest_service_1.GuestService.confirm(Number(id), attending);
+        const { attending, foodPreference } = req.body;
+        const guest = await guest_service_1.GuestService.confirm(Number(id), attending, foodPreference);
         res.json(guest);
     },
     async addNote(req, res) {

@@ -103,8 +103,8 @@ async getGuests(req: Request, res: Response) {
 
   async confirmGuest(req: Request, res: Response) {
     const { id } = req.params;
-    const { attending } = req.body;
-    const guest = await GuestService.confirm(Number(id), attending);
+    const { attending, foodPreference } = req.body;
+    const guest = await GuestService.confirm(Number(id), attending, foodPreference);
     res.json(guest);
   },
 

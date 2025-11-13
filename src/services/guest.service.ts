@@ -12,10 +12,14 @@ export const GuestService = {
     return prisma.guest.create({ data: { fullName } });
   },
 
-  async confirm(id: number, attending: boolean) {
+  async confirm(id: number, attending: boolean, foodPreference?: 'pasta' | 'carne') {
     return prisma.guest.update({
       where: { id },
-      data: { attending, confirmedAt: new Date() },
+      data: {
+        attending,
+        confirmedAt: new Date(),
+        ...(foodPreference && { foodPreference })
+      },
     });
   },
 

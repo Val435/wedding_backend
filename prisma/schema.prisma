@@ -8,14 +8,15 @@ generator client {
 }
 
 model Guest {
-  id          Int       @id @default(autoincrement())
-  fullName    String
-  attending   Boolean? // null = no confirmado, true = sí, false = no
-  confirmedAt DateTime? // cuándo confirmó
-  note        Note?     @relation(fields: [noteId], references: [id])
-  noteId      Int?      @unique
-  Group       Group?    @relation(fields: [groupId], references: [id])
-  groupId     Int?
+  id             Int            @id @default(autoincrement())
+  fullName       String
+  attending      Boolean? // null = no confirmado, true = sí, false = no
+  confirmedAt    DateTime? // cuándo confirmó
+  foodPreference FoodPreference? // preferencia de comida
+  note           Note?          @relation(fields: [noteId], references: [id])
+  noteId         Int?           @unique
+  Group          Group?         @relation(fields: [groupId], references: [id])
+  groupId        Int?
 }
 
 model Note {
@@ -53,4 +54,9 @@ model GalleryPhoto {
 enum FileType {
   image
   video
+}
+
+enum FoodPreference {
+  pasta
+  carne
 }

@@ -15,10 +15,14 @@ exports.GuestService = {
     async create(fullName) {
         return prisma_1.default.guest.create({ data: { fullName } });
     },
-    async confirm(id, attending) {
+    async confirm(id, attending, foodPreference) {
         return prisma_1.default.guest.update({
             where: { id },
-            data: { attending, confirmedAt: new Date() },
+            data: {
+                attending,
+                confirmedAt: new Date(),
+                ...(foodPreference && { foodPreference })
+            },
         });
     },
     async addNote(id, message) {
