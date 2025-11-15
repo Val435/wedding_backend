@@ -7,7 +7,7 @@
     "build": "prisma generate && prisma migrate deploy && tsc",
     "start": "node dist/server.js",
     "prisma": "prisma",
-    "seed": "ts-node --transpile-only prisma/seed.ts",
+    "seed": "ts-node --transpile-only prisma/quick-seed.ts",
     "reset-confirmations": "ts-node --transpile-only prisma/reset-confirmations.ts",
     "postinstall": "prisma generate"
   },

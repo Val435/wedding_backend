@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add src/controllers/guest.controller.ts)",
+      "Bash(git commit -m \"fix: búsqueda exacta por palabra individual (nombre o apellido)\")",
+      "Bash(git push origin main)",
+      "Bash(git commit -m \"fix: búsqueda por nombre completo o parcial con múltiples palabras\")",
+      "Bash(node read-excel-temp.js)",
+      "Bash(git commit -m \"fix: búsqueda exacta por palabra completa, Martin NO encuentra Martinez\")",
+      "Bash(npm install:*)",
+      "Bash(npx prisma migrate:*)",
+      "Bash(npx prisma generate:*)",
+      "Bash(npm run build:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
