@@ -34,7 +34,7 @@ async function main() {
   console.log("📊 Leyendo archivo Excel...");
   const workbook = XLSX.readFile(excelPath);
   const sheetName = workbook.SheetNames[0];
-  const data: any[] = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { range: 1 });
+  const data: any[] = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
   console.log(`📋 Encontradas ${data.length} filas en el Excel`);
 
   if (data.length === 0) {
