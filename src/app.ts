@@ -18,6 +18,7 @@ app.use(helmet({
 const allowedOrigins = [
   "https://www.bodapocasangreportillo.com",
   "https://bodapocasangreportillo.com",
+  "https://wedding-fawn-beta.vercel.app", // Dominio temporal de Vercel
   "http://localhost:5173", // Vite dev
   "http://localhost:3000", // Next/React dev
 ];

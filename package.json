@@ -8,6 +8,8 @@
     "start": "node dist/server.js",
     "prisma": "prisma",
     "seed": "ts-node --transpile-only prisma/quick-seed.ts",
+    "seed:add-guests": "ts-node --transpile-only prisma/seed-add-guests.ts",
+    "db:backup": "powershell -ExecutionPolicy Bypass -File scripts/backup-db.ps1",
     "reset-confirmations": "ts-node --transpile-only prisma/reset-confirmations.ts",
     "postinstall": "prisma generate"
   },
